@@ -1,0 +1,35 @@
+{% if product.metafields.custom.alternative_products.value %}
+  <div>
+    <p id="current-product-name" style="margin-top: 0; font-size: 13px;">
+      <span style="font-weight: normal;">Håndtak: </span>
+      <span style="font-weight: bold;">{{ product.title }}</span>
+    </p>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+    {% for alt_product in product.metafields.custom.alternative_products.value %}
+      {% if alt_product.available %}
+        {% assign img_border = '' %}
+        {% if alt_product.id == product.id %}
+          {% assign img_border = '2px solid rgb(8, 220, 114)' %}
+        {% endif %}
+        {% assign last_image = alt_product.images | last %}
+        <a href="{{ alt_product.url }}" title="{{ alt_product.title }}" 
+           style="margin-right: 10px; margin-bottom: 10px; flex-basis: calc(20% - 10px); position: relative;"
+           onmouseover="this.style.border='';document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Håndtak: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';"
+           onmouseout="document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Håndtak: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';"
+           ontouchstart="this.style.border='';document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Håndtak: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';"
+           ontouchend="document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Håndtak: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';">
+          <img src="{{ last_image | img_url: '600x600', crop: 'center', format: 'pjpg' }}" 
+               alt="{{ alt_product.title }}" 
+               loading="lazy" 
+               style="width: 100%; height: auto; border: {{ img_border }}; border-radius: 8px; box-sizing: border-box;"
+               onmouseover="if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline='1px solid rgb(34, 34, 34)'; setTimeout(function(){if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline= '';}.bind(this), 3000);"
+               ontouchstart="if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline='1px solid rgb(34, 34, 34)'; setTimeout(function(){if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline= '';}.bind(this), 3000);"
+               onmouseout="if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline= '';"
+               ontouchend="if('{{ alt_product.id }}' != '{{ product.id }}') this.style.outline= '';"
+          >
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
