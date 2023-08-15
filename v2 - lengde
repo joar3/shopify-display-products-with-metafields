@@ -1,0 +1,89 @@
+{% if product.metafields.custom.alternative_products.value %}
+  <style>
+    .product-container {
+      margin-right: 10px; 
+      margin-bottom: 10px; 
+      flex-basis: calc(20% - 10px); 
+      position: relative;
+    }
+    .product-image {
+      width: 100%; 
+      height: auto; 
+      border-radius: 8px; 
+      box-sizing: border-box;
+    }
+  </style>
+
+  <div>
+    <p id="current-product-name" style="margin-top: 0; font-size: 13px;">
+      <span style="font-weight: normal;">Lengde: </span>
+      <span style="font-weight: bold;">{{ product.title }}</span>
+    </p>
+  </div>
+  
+  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+    {% for alt_product in product.metafields.custom.alternative_products.value %}
+      {% assign last_image = alt_product.images | last %}
+      <a href="{{ alt_product.url }}" title="{{ alt_product.title }}" class="product-container">
+        <img src="{{ last_image | img_url: '600x600', crop: 'center', format: 'pjpg' }}" 
+             alt="{{ alt_product.title }}" 
+             loading="lazy" 
+             class="product-image" 
+             onmouseover="updateProductName('{{ alt_product.title }}', this, '{{ alt_product.id }}', '{{ product.id }}')" 
+             onmouseout="resetProductName(this, '{{ alt_product.id }}', '{{ product.id }}')" 
+             ontouchstart="updateProductName('{{ alt_product.title }}', this, '{{ alt_product.id }}', '{{ product.id }}')" 
+             ontouchend="resetProductName(this, '{{ alt_product.id }}', '{{ product.id }}')"
+             onmousemove="resetTimeout('{{ alt_product.title }}', this, '{{ alt_product.id }}', '{{ product.id }}')"
+             ontouchmove="resetTimeout('{{ alt_product.title }}', this, '{{ alt_product.id }}', '{{ product.id }}')"
+             style="border: {% if alt_product.id == product.id %}{% if alt_product.available %}2px solid rgb(8, 220, 114){% else %}2px solid rgb(200, 200, 200){% endif %}{% else %}1px solid transparent{% endif %};">
+      </a>
+    {% endfor %}
+  </div>
+
+  <script>
+    var timeoutID;
+    var timeoutID2;
+
+    function updateProductName(name, element, altProductID, currentProductID) {
+      clearTimeout(timeoutID2);
+      document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Lengde: </span><span style=\'font-weight: bold;\'>' + name + '</span>';
+      timeoutID2 = setTimeout(function() {
+        document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Lengde: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';
+      }, 3000);
+
+      if (altProductID !== currentProductID) {
+        clearTimeout(timeoutID);
+        element.style.border = '1px solid rgb(34, 34, 34)';
+        timeoutID = setTimeout(function() {
+          element.style.border = '1px solid transparent';
+        }, 3000);
+      }
+    }
+
+    function resetProductName(element, altProductID, currentProductID) {
+      clearTimeout(timeoutID2);
+      document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Lengde: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';
+
+      if (altProductID !== currentProductID) {
+        clearTimeout(timeoutID);
+        element.style.border = '1px solid transparent';
+      }
+    }
+
+    function resetTimeout(name, element, altProductID, currentProductID) {
+      if (altProductID !== currentProductID) {
+        clearTimeout(timeoutID);
+        element.style.border = '1px solid rgb(34, 34, 34)';
+        timeoutID = setTimeout(function() {
+          element.style.border = '1px solid transparent';
+        }, 3000);
+      }
+
+      clearTimeout(timeoutID2);
+      document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Lengde: </span><span style=\'font-weight: bold;\'>' + name + '</span>';
+      timeoutID2 = setTimeout(function() {
+        document.getElementById('current-product-name').innerHTML = '<span style=\'font-weight: normal;\'>Lengde: </span><span style=\'font-weight: bold;\'>{{ product.title }}</span>';
+      }, 3000);
+    }
+  </script>
+{% endif %}
